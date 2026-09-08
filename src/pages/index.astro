@@ -1,0 +1,169 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { fetchStars } from '../lib/github';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const stars = Object.fromEntries(
+  await Promise.all(
+    projects.map(async (p) => [p.id, await fetchStars(p.data.repo)]),
+  ),
+);
+
+const fmtStarted = (ym: string) =>
+  new Date(`${ym}-01`).toLocaleDateString('en', { month: 'short', year: 'numeric' });
+
+const statusLabel = { live: 'Live', wip: 'In progress', planned: 'Planned' };
+---
+
+<Base
+  title="Chen Builds"
+  description="Chen's side projects — small web apps built with Claude."
+>
+  <div class="split">
+    <header class="hero">
+      <div>
+        <h1>Chen<br />Builds</h1>
+        <p class="about">
+          Hi, I'm Chen — a software developer from Israel. These are small web
+          apps I build with Claude in my spare time. Find me on
+          <a href="https://www.linkedin.com/in/chen-m/">LinkedIn</a>.
+        </p>
+      </div>
+      <footer>
+        Built with <a href="https://claude.com/claude-code">Claude Code</a> ·
+        <a href="https://github.com/chenmu10">github.com/chenmu10</a>
+      </footer>
+    </header>
+
+    <main class="index">
+      {projects.map((p) => (
+        <a class="row" href={`/projects/${p.id}/`}>
+          {p.data.cover ? (
+            <img class="cover" src={p.data.cover} alt="" loading="lazy" width="640" height="400" />
+          ) : (
+            <div class="cover placeholder" aria-hidden="true">{p.data.title.slice(0, 1)}</div>
+          )}
+          <div class="body">
+            <div class="titleline">
+              <h2>{p.data.title}</h2>
+              <span class={`pill ${p.data.status}`}>{statusLabel[p.data.status]}</span>
+            </div>
+            <p class="desc">{p.data.description}</p>
+            <div class="meta">
+              {p.data.tech.map((t) => <span class="chip">{t}</span>)}
+            </div>
+            <p class="facts">
+              Started {fmtStarted(p.data.started)}
+              {p.data.repo && (
+                <>
+                  {' · '}
+                  <span class="repo">{p.data.repo.split('/')[1]}</span>
+                  {!!stars[p.id] && <span> ★ {stars[p.id]}</span>}
+                </>
+              )}
+            </p>
+          </div>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </main>
+  </div>
+</Base>
+
+<style>
+  .split {
+    display: grid;
+    grid-template-columns: minmax(18rem, 2fr) 3fr;
+    min-height: 100dvh;
+  }
+  @media (width < 52rem) {
+    .split { grid-template-columns: 1fr; }
+    .hero { min-height: 40dvh; }
+  }
+
+  .hero {
+    background: linear-gradient(160deg, var(--panel), var(--panel2));
+    color: #fff;
+    padding: clamp(2.5rem, 6vw, 4rem);
+    display: grid;
+    align-content: space-between;
+    gap: 2rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+    margin: 0;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+  }
+  .about {
+    margin: 1.25rem 0 0;
+    opacity: .88;
+    max-width: 32ch;
+    font-size: 1.05rem;
+  }
+  .about a { color: #fff; font-weight: 600; text-underline-offset: 3px; }
+  .hero footer { font-size: .85rem; opacity: .8; }
+  .hero footer a { color: #fff; }
+
+  .index {
+    padding: clamp(2rem, 5vw, 4rem);
+    display: grid;
+    align-content: center;
+    gap: 1.25rem;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 11rem 1fr auto;
+    gap: 1.4rem;
+    align-items: center;
+    padding: 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .15s ease, translate .15s ease;
+  }
+  .row:hover, .row:focus-visible { border-color: var(--panel); translate: 0 -2px; }
+  @media (width < 40rem) {
+    .row { grid-template-columns: 1fr; }
+    .arrow { display: none; }
+  }
+
+  .cover {
+    width: 100%;
+    aspect-ratio: 8 / 5;
+    object-fit: cover;
+    object-position: top;
+    border-radius: .6rem;
+    border: 1px solid var(--border);
+  }
+  .cover.placeholder {
+    display: grid;
+    place-items: center;
+    background: linear-gradient(140deg, var(--panel), var(--panel2));
+    color: rgb(255 255 255 / .85);
+    font-size: 2.6rem;
+    font-weight: 800;
+  }
+
+  .body { display: grid; gap: .35rem; }
+  .titleline { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+  .titleline h2 { margin: 0; font-size: 1.3rem; letter-spacing: -0.01em; }
+  .desc { margin: 0; color: var(--muted); font-size: .95rem; }
+  .meta { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .15rem; }
+  .facts { margin: .15rem 0 0; color: var(--muted); font-size: .82rem; }
+  .repo { font-family: ui-monospace, monospace; }
+
+  .arrow {
+    font-size: 1.4rem;
+    color: var(--muted);
+    transition: translate .15s ease, color .15s ease;
+  }
+  .row:hover .arrow { translate: 6px 0; color: var(--panel); }
+</style>

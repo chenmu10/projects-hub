@@ -1,0 +1,48 @@
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(#ffffff, #15161a);
+  --ink: light-dark(#17181c, #ececf1);
+  --muted: light-dark(#6b6e78, #9a9daa);
+  --border: light-dark(#e8e8ee, #2c2d35);
+  --surface: light-dark(#f7f7fa, #1c1d23);
+  --panel: #4338ca;
+  --panel2: #7c3aed;
+  accent-color: var(--panel);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100dvh;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.55;
+}
+
+a { color: var(--panel); }
+
+.pill {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  padding: .2rem .65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pill.live { background: light-dark(#ecfdf3, #12261c); color: #16a34a; }
+.pill.wip { background: light-dark(#fef6e7, #2b2314); color: #d97706; }
+.pill.planned { background: light-dark(#f4f4f6, #26272e); color: var(--muted); }
+
+.chip {
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .15rem .6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: var(--surface);
+  white-space: nowrap;
+}

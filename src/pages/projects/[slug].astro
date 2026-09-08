@@ -1,0 +1,98 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { fetchStars } from '../../lib/github';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((p) => ({ params: { slug: p.id }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const stars = await fetchStars(project.data.repo);
+
+const fmtStarted = new Date(`${project.data.started}-01`).toLocaleDateString('en', {
+  month: 'long',
+  year: 'numeric',
+});
+const statusLabel = { live: 'Live', wip: 'In progress', planned: 'Planned' };
+---
+
+<Base
+  title={`${project.data.title} — Chen Builds`}
+  description={project.data.description}
+  ogImage={project.data.cover}
+>
+  <main class="wrap">
+    <nav><a href="/">← Chen Builds</a></nav>
+
+    <header>
+      <div class="titleline">
+        <h1>{project.data.title}</h1>
+        <span class={`pill ${project.data.status}`}>{statusLabel[project.data.status]}</span>
+      </div>
+      <p class="desc">{project.data.description}</p>
+      <div class="meta">
+        {project.data.tech.map((t) => <span class="chip">{t}</span>)}
+      </div>
+      <p class="facts">
+        Started {fmtStarted}
+        {project.data.repo && (
+          <>
+            {' · '}
+            <a href={`https://github.com/${project.data.repo}`}>{project.data.repo}</a>
+            {!!stars && <span> ★ {stars}</span>}
+          </>
+        )}
+        {project.data.liveUrl && (
+          <>
+            {' · '}
+            <a href={project.data.liveUrl}>Open the app →</a>
+          </>
+        )}
+      </p>
+    </header>
+
+    {project.data.cover && (
+      <a href={project.data.liveUrl ?? project.data.cover}>
+        <img class="cover" src={project.data.cover} alt={`Screenshot of ${project.data.title}`} width="1280" height="800" />
+      </a>
+    )}
+
+    <article>
+      <Content />
+    </article>
+  </main>
+</Base>
+
+<style>
+  .wrap {
+    width: min(44rem, 100% - 3rem);
+    margin-inline: auto;
+    padding-block: clamp(2rem, 6vh, 4rem) 4rem;
+  }
+  nav { margin-bottom: 2.5rem; font-size: .9rem; }
+  nav a { text-decoration: none; font-weight: 600; }
+  nav a:hover { text-decoration: underline; }
+
+  .titleline { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: clamp(1.9rem, 5vw, 2.6rem); letter-spacing: -0.02em; }
+  .desc { color: var(--muted); font-size: 1.1rem; margin: .5rem 0 1rem; }
+  .meta { display: flex; gap: .4rem; flex-wrap: wrap; }
+  .facts { color: var(--muted); font-size: .9rem; margin: 1rem 0 0; }
+
+  .cover {
+    width: 100%;
+    height: auto;
+    border-radius: .8rem;
+    border: 1px solid var(--border);
+    margin-block: 2rem 0;
+  }
+
+  article { margin-top: 2.5rem; }
+  article :global(h2) { font-size: 1.35rem; margin: 2.2rem 0 .6rem; letter-spacing: -0.01em; }
+  article :global(p) { margin: .8rem 0; }
+  article :global(li) { margin: .3rem 0; }
+  article :global(em) { color: var(--muted); }
+</style>

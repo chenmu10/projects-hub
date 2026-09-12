@@ -4,7 +4,7 @@ description: Live parking-lot availability for Tel Aviv's Ahuzot HaHof lots, on 
 status: live
 started: 2026-08
 tech: [JavaScript, Leaflet, MapLibre, GitHub Pages]
-liveUrl: https://chenmu10.github.io/tel-aviv-parking-map/
+liveUrl: https://tlv-parking.vercel.app/
 repo: chenmu10/tel-aviv-parking-map
 cover: /covers/tel-aviv-parking-lots.png
 order: 1

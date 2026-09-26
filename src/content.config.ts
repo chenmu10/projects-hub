@@ -13,6 +13,11 @@ const projects = defineCollection({
     repo: z.string().optional(), // "owner/name"
     cover: z.string().optional(), // path under /public
     order: z.number().default(99),
+    // Hebrew "use it" layer shown on the home page
+    titleHe: z.string().optional(),
+    taglineHe: z.string().optional(),
+    icon: z.string().optional(), // path under /public
+    screenshot: z.string().optional(), // phone screenshot under /public
   }),
 });
 

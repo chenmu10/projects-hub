@@ -3,29 +3,41 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
-  description: string;
+  description?: string;
   ogImage?: string;
+  lang?: string;
+  dir?: 'ltr' | 'rtl';
 }
 
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, lang = 'en', dir = 'ltr' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang} dir={dir}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="description" content={description} />
+    {description && <meta name="description" content={description} />}
     <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    {description && <meta property="og:description" content={description} />}
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
     <title>{title}</title>
+    <script is:inline>
+      // Apply a saved light/dark choice before first paint (no flash).
+      try {
+        const t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
   </head>
   <body>
     <slot />

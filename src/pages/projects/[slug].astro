@@ -20,12 +20,12 @@ const statusLabel = { live: 'Live', wip: 'In progress', planned: 'Planned' };
 ---
 
 <Base
-  title={`${project.data.title} — Chen Builds`}
+  title={`${project.data.title} — Chen's Projects`}
   description={project.data.description}
   ogImage={project.data.cover}
 >
   <main class="wrap">
-    <nav><a href="/">← Chen Builds</a></nav>
+    <nav><a href="/">← Chen's Projects</a></nav>
 
     <header>
       <div class="titleline">
@@ -45,13 +45,10 @@ const statusLabel = { live: 'Live', wip: 'In progress', planned: 'Planned' };
             {!!stars && <span> ★ {stars}</span>}
           </>
         )}
-        {project.data.liveUrl && (
-          <>
-            {' · '}
-            <a href={project.data.liveUrl}>Open the app →</a>
-          </>
-        )}
       </p>
+      {project.data.liveUrl && (
+        <a class="open" href={project.data.liveUrl}>Open the app →</a>
+      )}
     </header>
 
     {project.data.cover && (
@@ -81,6 +78,19 @@ const statusLabel = { live: 'Live', wip: 'In progress', planned: 'Planned' };
   .desc { color: var(--muted); font-size: 1.1rem; margin: .5rem 0 1rem; }
   .meta { display: flex; gap: .4rem; flex-wrap: wrap; }
   .facts { color: var(--muted); font-size: .9rem; margin: 1rem 0 0; }
+  .open {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin-top: 1.25rem;
+    padding-inline: 1.4rem;
+    border-radius: 999px;
+    background: var(--panel);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .open:hover, .open:focus-visible { background: var(--panel2); }
 
   .cover {
     width: 100%;

@@ -2,7 +2,7 @@
 
 My portfolio site — side projects built with [Claude Code](https://claude.com/claude-code).
 
-Site address (once deployed): https://chens-projects.vercel.app
+Live: https://chensprojects.vercel.app
 
 Built with [Astro](https://astro.build). Each project is a markdown file in
 `src/content/projects/` and gets a card on the home page (Hebrew, with an
